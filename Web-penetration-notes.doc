@@ -1,0 +1,65 @@
+PASSWORD POLICY :
+
+
+### **1. Password Complexity Requirements**
+   - **Minimum length** (e.g., at least 8-12 characters)
+   - **Character diversity** (uppercase, lowercase, numbers, special characters)
+   - **Avoidance of common passwords** (e.g., `password123`, `admin`)
+   - **Password blacklisting** (preventing easily guessable passwords)
+
+✅ **Test Methods:**
+   - Attempt to set weak passwords (e.g., `123456`, `qwerty`) and check enforcement.
+   - Verify if the system rejects passwords without required complexity.
+
+### **2. Password Change & Reset Policies**
+   - **Forced periodic password changes** (e.g., every 90 days)
+   - **Prevention of password reuse** (last 3-5 passwords not allowed)
+   - **Secure password reset mechanism** (avoid insecure methods like security questions)
+
+✅ **Test Methods:**
+   - Try reusing an old password.
+   - Check if password reset tokens are guessable or have a short expiry.
+   - Test for **account lockout bypass** after multiple reset attempts.
+
+### **3. Account Lockout Mechanisms**
+   - **Brute-force protection** (e.g., account lockout after 5 failed attempts)
+   - **Lockout duration** (temporary vs. permanent lockout)
+   - **Rate limiting** on login attempts
+
+✅ **Test Methods:**
+   - Perform brute-force attacks (with permission) to test lockout.
+   - Check if **CAPTCHA** or **2FA** is enforced after multiple failures.
+
+### **4. Storage & Transmission Security**
+   - **Passwords must be hashed** (using strong algorithms like **bcrypt, Argon2, PBKDF2**)
+   - **No plaintext passwords** in logs, databases, or error messages
+   - **HTTPS enforcement** to prevent interception
+
+✅ **Test Methods:**
+   - Check database dumps or API responses for plaintext passwords.
+   - Test for **weak hashing** (e.g., MD5, SHA-1) via exposed data breaches.
+
+### **5. Multi-Factor Authentication (MFA)**
+   - **Availability of MFA** (SMS, TOTP, biometrics)
+   - **Bypass testing** (e.g., session fixation, MFA code brute-forcing)
+
+✅ **Test Methods:**
+   - Check if MFA can be skipped via parameter tampering.
+   - Test for **SMS or email OTP brute-forcing**.
+
+### **6. User Enumeration Vulnerabilities**
+   - **Error messages** should not reveal valid usernames (e.g., "Invalid password" vs. "User not found")
+   - **Password reset pages** should not confirm account existence.
+
+✅ **Test Methods:**
+   - Attempt login with invalid users and observe error differences.
+   - Check password reset functionality for information leakage.
+
+### **7. Session Management & Password Policies**
+   - **Session timeout** after inactivity.
+   - **Password re-authentication** for sensitive actions (e.g., changing email or payment details).
+
+✅ **Test Methods:**
+   - Test if sessions remain active indefinitely.
+   - Verify if changing passwords invalidates existing sessions.
+
