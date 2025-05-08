@@ -1,0 +1,158 @@
+When performing **web security testing**, analyzing **HTTP security headers** is crucial to protect against various attacks like XSS, clickjacking, MIME sniffing, and more. Below is a breakdown of **allowed (recommended)** and **not allowed (risky)** security headers:
+
+---
+
+## **✅ Recommended Security Headers (Allowed)**
+These headers enhance security and should be implemented:
+
+### **1. Content Security Policy (CSP)**
+   - Mitigates **XSS, data injection, and unauthorized resource loading**.
+   - Example:  
+     ```http
+     Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com
+     ```
+
+### **2. Strict-Transport-Security (HSTS)**
+   - Enforces **HTTPS** and prevents SSL stripping.
+   - Example:  
+     ```http
+     Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+     ```
+
+### **3. X-Content-Type-Options**
+   - Prevents **MIME sniffing** (forces declared `Content-Type`).
+   - Example:  
+     ```http
+     X-Content-Type-Options: nosniff
+     ```
+
+### **4. X-Frame-Options**
+   - Protects against **clickjacking** by controlling iframe embedding.
+   - Example:  
+     ```http
+     X-Frame-Options: DENY  (or SAMEORIGIN)
+     ```
+
+### **5. X-XSS-Protection**
+   - Enables browser XSS filter (deprecated but still useful for older browsers).
+   - Example:  
+     ```http
+     X-XSS-Protection: 1; mode=block
+     ```
+
+### **6. Referrer-Policy**
+   - Controls **referrer header** leakage (prevents sensitive URL exposure).
+   - Example:  
+     ```http
+     Referrer-Policy: no-referrer-when-downgrade
+     ```
+
+### **7. Permissions-Policy (formerly Feature-Policy)**
+   - Restricts browser features (camera, geolocation, autoplay, etc.).
+   - Example:  
+     ```http
+     Permissions-Policy: geolocation=(), camera=(), microphone=()
+     ```
+
+### **8. Cross-Origin Resource Sharing (CORS) Headers**
+   - Controls cross-origin requests (avoid misconfigurations like `Access-Control-Allow-Origin: *`).
+   - Example:  
+     ```http
+     Access-Control-Allow-Origin: https://trusted-site.com
+     Access-Control-Allow-Credentials: true
+     ```
+
+### **9. Cache-Control & Pragma**
+   - Prevents sensitive data caching.
+   - Example:  
+     ```http
+     Cache-Control: no-store, no-cache, must-revalidate
+     Pragma: no-cache
+     ```
+
+### **10. Expect-CT (Certificate Transparency)**
+   - Ensures valid SSL certificates (deprecated but still in use).
+   - Example:  
+     ```http
+     Expect-CT: max-age=86400, enforce, report-uri="https://example.com/report"
+     ```
+
+---
+
+## **❌ Risky or Deprecated Headers (Not Allowed)**
+These headers can introduce security risks and should be **avoided or removed**:
+
+### **1. Server Header**
+   - Reveals server version (helps attackers in fingerprinting).
+   - ❌ Bad:  
+     ```http
+     Server: Apache/2.4.41 (Ubuntu)
+     ```
+   - ✅ Fix: Remove or obfuscate it.
+
+### **2. X-Powered-By**
+   - Exposes backend tech (PHP, ASP.NET, etc.).
+   - ❌ Bad:  
+     ```http
+     X-Powered-By: PHP/7.4.3
+     ```
+   - ✅ Fix: Remove it.
+
+### **3. Public-Key-Pins (HPKP)**
+   - Deprecated due to risk of **bricking** sites if keys expire.
+   - ❌ Avoid:  
+     ```http
+     Public-Key-Pins: pin-sha256="..."; max-age=5184000
+     ```
+   - ✅ Use **Certificate Transparency (Expect-CT)** instead.
+
+### **4. X-AspNet-Version / X-AspNetMvc-Version**
+   - Leaks ASP.NET framework details.
+   - ❌ Bad:  
+     ```http
+     X-AspNet-Version: 4.0.30319
+     ```
+   - ✅ Fix: Remove it.
+
+### **5. Access-Control-Allow-Origin: ***
+   - Allows **any domain** to access resources (risky for APIs with credentials).
+   - ❌ Bad:  
+     ```http
+     Access-Control-Allow-Origin: *
+     ```
+   - ✅ Fix: Whitelist specific domains.
+
+### **6. Set-Cookie Without Secure & HttpOnly Flags**
+   - Cookies without `Secure` (HTTPS-only) and `HttpOnly` (block JS access) are vulnerable.
+   - ❌ Bad:  
+     ```http
+     Set-Cookie: sessionid=12345
+     ```
+   - ✅ Fix:  
+     ```http
+     Set-Cookie: sessionid=12345; Secure; HttpOnly; SameSite=Strict
+     ```
+
+---
+
+## **🔧 Tools to Test Security Headers**
+1. **Browser DevTools** (Network tab → Check headers)
+2. **SecurityHeaders.com** (Scans & grades headers)
+3. **Burp Suite / OWASP ZAP** (Manual inspection)
+4. **curl / httpie** (Command-line checks)
+   ```sh
+   curl -I https://example.com
+   ```
+
+---
+
+## **📌 Best Practices**
+✔ **Enable CSP** to mitigate XSS.  
+✔ **Enforce HSTS** to prevent HTTPS downgrades.  
+✔ **Disable server info leaks** (`Server`, `X-Powered-By`).  
+✔ **Use `Secure`, `HttpOnly`, and `SameSite`** for cookies.  
+✔ **Avoid permissive CORS** (`Access-Control-Allow-Origin: *`).  
+
+By properly configuring these headers, you significantly reduce the risk of common web attacks. 🚀  
+
+Would you like a **step-by-step guide** on testing these headers in a penetration test?
